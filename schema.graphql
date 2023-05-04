@@ -1,0 +1,38 @@
+type Query {
+    getBlog(id: ID!): Blog
+    getAll: [Blog]
+}
+
+type Mutation {
+    createBlog(input: CreateBlogInput!): Blog
+    updateBlog(input: UpdateBlogInput!): Blog
+    deleteBlog(id: ID!): Blog
+}
+
+input UpdateBlogInput {
+    id: ID!
+    title: String
+    blogUrl: String
+    author: String
+    publicationDate: String
+}
+
+input CreateBlogInput {
+    title: String!
+    blogUrl: String!
+    author: String!
+    publicationDate: String!
+}
+
+type Blog {
+    id: ID
+    title: String
+    blogUrl: String
+    author: String
+    publicationDate: String
+}
+
+type Schema {
+    query: Query
+    mutation: Mutation
+}

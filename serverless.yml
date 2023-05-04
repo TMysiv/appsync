@@ -1,0 +1,84 @@
+service: appsync
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-west-3
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - dynamodb:DescribeTable
+            - dynamodb:BatchGetItem
+          Resource:
+            - "*"
+
+plugins:
+  - serverless-appsync-plugin
+  - serverless-offline
+
+functions:
+  createBlog:
+    handler: Lambdas/createBlog/index.handler
+  getBlog:
+    handler: Lambdas/getBlog/index.handler
+  updateBlog:
+    handler: Lambdas/updateBlog/index.handler
+  deleteBlog:
+    handler: Lambdas/deleteBlog/index.handler
+
+custom:
+  appSync:
+    name: appsync
+    authenticationType: API_KEY
+    schema: schema.graphql
+    apiKeys:
+      - apiKey
+    dataSources:
+      - type: AWS_LAMBDA
+        name: createBlog
+        description: 'Lambda'
+        config:
+          functionName: createBlog
+      - type: AWS_LAMBDA
+        name: getBlog
+        description: 'Lambda'
+        config:
+          functionName: getBlog
+      - type: AWS_LAMBDA
+        name: updateBlog
+        description: 'Lambda'
+        config:
+          functionName: updateBlog
+      - type: AWS_LAMBDA
+        name: deleteBlog
+        description: 'Lambda'
+        config:
+          functionName: deleteBlog
+
+resources:
+  Resources:
+    BlogsTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ApiSync
+
+
+
